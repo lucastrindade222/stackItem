@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TagService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">stackItem</a> &gt; <a href="index.source.html" class="el_package">com.lucas.stackitem.service</a> &gt; <span class="el_source">TagService.java</span></div><h1>TagService.java</h1><pre class="source lang-java linenums">package com.lucas.stackitem.service;
+
+import com.lucas.stackitem.model.Tag;
+import com.lucas.stackitem.repository.TagRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+<span class="fc" id="L12">public class TagService {</span>
+
+    @Autowired
+    private TagRepository tagRepository;
+
+    public Tag create(Tag tag) {
+<span class="fc bfc" id="L18" title="All 2 branches covered.">        if (tagRepository.existsByNome(tag.getNome())) {</span>
+<span class="fc" id="L19">            throw new IllegalArgumentException(&quot;Tag já cadastrada&quot;);</span>
+        }
+<span class="fc" id="L21">        return tagRepository.save(tag);</span>
+    }
+
+    public Optional&lt;Tag&gt; findById(Long id) {
+<span class="fc" id="L25">        return tagRepository.findById(id);</span>
+    }
+
+    public Optional&lt;Tag&gt; findByNome(String nome) {
+<span class="fc" id="L29">        return tagRepository.findByNome(nome);</span>
+    }
+
+    public List&lt;Tag&gt; findAll() {
+<span class="fc" id="L33">        return tagRepository.findAll();</span>
+    }
+
+    public Tag update(Long id, Tag tag) {
+<span class="fc" id="L37">        Tag existingTag = tagRepository.findById(id)</span>
+<span class="fc" id="L38">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Tag não encontrada&quot;));</span>
+        
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        if (!existingTag.getNome().equals(tag.getNome()) &amp;&amp; </span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">            tagRepository.existsByNome(tag.getNome())) {</span>
+<span class="fc" id="L42">            throw new IllegalArgumentException(&quot;Tag já cadastrada&quot;);</span>
+        }
+        
+<span class="fc" id="L45">        tag.setId(id);</span>
+<span class="fc" id="L46">        return tagRepository.save(tag);</span>
+    }
+
+    public void delete(Long id) {
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (!tagRepository.existsById(id)) {</span>
+<span class="fc" id="L51">            throw new IllegalArgumentException(&quot;Tag não encontrada&quot;);</span>
+        }
+<span class="fc" id="L53">        tagRepository.deleteById(id);</span>
+<span class="fc" id="L54">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
