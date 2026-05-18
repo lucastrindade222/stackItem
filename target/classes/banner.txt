@@ -1,0 +1,12 @@
+${AnsiColor.BRIGHT_CYAN}
+    __                          ____              _                       
+   / /   __  __________  _____ / __ \___ _   __  (_)___ __   ______ _     
+  / /   / / / / ___/ __ `/ ___// / / / _ \ | / / / / __ `/ | / / __ `/     
+ / /___/ /_/ / /__/ /_/ (__  )/ /_/ /  __/ |/ / / / /_/ /| |/ / /_/ /      
+/_____/\__,_/\___/\__,_/____//_____/\___/|___/_/ /\__,_/ |___/\__,_/       
+                                            /___/                          
+${AnsiColor.BRIGHT_YELLOW}================================================================================
+${AnsiColor.BRIGHT_GREEN} :: Status     : ${AnsiColor.BRIGHT_RED}Em Desenvolvimento (Pre-Alpha)
+${AnsiColor.BRIGHT_GREEN} :: App Version: ${AnsiColor.BRIGHT_WHITE}${application.version}
+${AnsiColor.BRIGHT_GREEN} :: Spring Boot: ${AnsiColor.BRIGHT_WHITE}v${spring-boot.version}
+${AnsiColor.BRIGHT_YELLOW}================================================================================

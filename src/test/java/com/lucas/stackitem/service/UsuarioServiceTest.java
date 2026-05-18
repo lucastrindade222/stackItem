@@ -1,14 +1,18 @@
 package com.lucas.stackitem.service;
 
+import com.lucas.stackitem.dto.LoginRequest;
+import com.lucas.stackitem.dto.LoginResponse;
 import com.lucas.stackitem.model.PerfilUsuario;
 import com.lucas.stackitem.model.StatusUsuario;
 import com.lucas.stackitem.model.Usuario;
 import com.lucas.stackitem.repository.UsuarioRepository;
+import com.lucas.stackitem.security.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,12 +20,19 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 class UsuarioServiceTest {
 
     @Mock
     private UsuarioRepository usuarioRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private JwtTokenProvider jwtTokenProvider;
 
     @InjectMocks
     private UsuarioService usuarioService;
@@ -45,6 +56,7 @@ class UsuarioServiceTest {
     @Test
     void testCreate() {
         when(usuarioRepository.existsByEmail(usuario.getEmail())).thenReturn(false);
+        when(passwordEncoder.encode("senha123")).thenReturn("senhaCriptografada");
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
 
         Usuario resultado = usuarioService.create(usuario);
@@ -52,6 +64,8 @@ class UsuarioServiceTest {
         assertNotNull(resultado);
         assertEquals("João", resultado.getNome());
         assertEquals("joao.silva@email.com", resultado.getEmail());
+        // Verifica que a senha foi criptografada antes de salvar
+        verify(passwordEncoder, times(1)).encode("senha123");
         verify(usuarioRepository, times(1)).existsByEmail(usuario.getEmail());
         verify(usuarioRepository, times(1)).save(usuario);
     }
@@ -67,6 +81,7 @@ class UsuarioServiceTest {
 
         assertEquals("Email já cadastrado", exception.getMessage());
         verify(usuarioRepository, times(1)).existsByEmail(usuario.getEmail());
+        verify(passwordEncoder, never()).encode(anyString());
         verify(usuarioRepository, never()).save(any(Usuario.class));
     }
 
@@ -140,9 +155,11 @@ class UsuarioServiceTest {
         Usuario usuarioAtualizado = new Usuario();
         usuarioAtualizado.setNome("João Atualizado");
         usuarioAtualizado.setEmail("joao.atualizado@email.com");
+        usuarioAtualizado.setSenha("novaSenha");
 
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
         when(usuarioRepository.existsByEmail("joao.atualizado@email.com")).thenReturn(false);
+        when(passwordEncoder.encode("novaSenha")).thenReturn("senhaCriptografada");
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuarioAtualizado);
 
         Usuario resultado = usuarioService.update(1L, usuarioAtualizado);
@@ -151,6 +168,7 @@ class UsuarioServiceTest {
         assertEquals("João Atualizado", resultado.getNome());
         verify(usuarioRepository, times(1)).findById(1L);
         verify(usuarioRepository, times(1)).existsByEmail("joao.atualizado@email.com");
+        verify(passwordEncoder, times(1)).encode("novaSenha");
         verify(usuarioRepository, times(1)).save(any(Usuario.class));
     }
 
@@ -167,6 +185,7 @@ class UsuarioServiceTest {
         assertEquals("Usuário não encontrado", exception.getMessage());
         verify(usuarioRepository, times(1)).findById(99L);
         verify(usuarioRepository, never()).existsByEmail(anyString());
+        verify(passwordEncoder, never()).encode(anyString());
         verify(usuarioRepository, never()).save(any(Usuario.class));
     }
 
@@ -186,6 +205,7 @@ class UsuarioServiceTest {
         assertEquals("Email já cadastrado", exception.getMessage());
         verify(usuarioRepository, times(1)).findById(1L);
         verify(usuarioRepository, times(1)).existsByEmail("email.existente@email.com");
+        verify(passwordEncoder, never()).encode(anyString());
         verify(usuarioRepository, never()).save(any(Usuario.class));
     }
 
@@ -202,6 +222,8 @@ class UsuarioServiceTest {
         assertNotNull(resultado);
         verify(usuarioRepository, times(1)).findById(1L);
         verify(usuarioRepository, never()).existsByEmail(anyString());
+        // Mantém a senha existente pois nenhuma nova foi fornecida
+        verify(passwordEncoder, never()).encode(anyString());
         verify(usuarioRepository, times(1)).save(any(Usuario.class));
     }
 
@@ -227,5 +249,88 @@ class UsuarioServiceTest {
         assertEquals("Usuário não encontrado", exception.getMessage());
         verify(usuarioRepository, times(1)).existsById(99L);
         verify(usuarioRepository, never()).deleteById(anyLong());
+    }
+
+    // Testes de Login
+
+    @Test
+    void testLoginSuccess() {
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setEmail("joao.silva@email.com");
+        loginRequest.setSenha("senha123");
+
+        when(usuarioRepository.findByEmail("joao.silva@email.com")).thenReturn(Optional.of(usuario));
+        when(passwordEncoder.matches("senha123", usuario.getSenha())).thenReturn(true);
+        when(jwtTokenProvider.generateToken("joao.silva@email.com")).thenReturn("tokenJWT");
+
+        LoginResponse response = usuarioService.login(loginRequest);
+
+        assertNotNull(response);
+        assertEquals("tokenJWT", response.getToken());
+        assertEquals(usuario, response.getUsuario());
+        verify(usuarioRepository, times(1)).findByEmail("joao.silva@email.com");
+        verify(passwordEncoder, times(1)).matches("senha123", usuario.getSenha());
+        verify(jwtTokenProvider, times(1)).generateToken("joao.silva@email.com");
+    }
+
+    @Test
+    void testLoginEmailNotFound() {
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setEmail("naoexiste@email.com");
+        loginRequest.setSenha("senha123");
+
+        when(usuarioRepository.findByEmail("naoexiste@email.com")).thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> usuarioService.login(loginRequest)
+        );
+
+        assertEquals("Email ou senha inválidos", exception.getMessage());
+        verify(usuarioRepository, times(1)).findByEmail("naoexiste@email.com");
+        verify(passwordEncoder, never()).matches(anyString(), anyString());
+        verify(jwtTokenProvider, never()).generateToken(anyString());
+    }
+
+    @Test
+    void testLoginWrongPassword() {
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setEmail("joao.silva@email.com");
+        loginRequest.setSenha("senhaErrada");
+
+        when(usuarioRepository.findByEmail("joao.silva@email.com")).thenReturn(Optional.of(usuario));
+        when(passwordEncoder.matches("senhaErrada", usuario.getSenha())).thenReturn(false);
+
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> usuarioService.login(loginRequest)
+        );
+
+        assertEquals("Email ou senha inválidos", exception.getMessage());
+        verify(usuarioRepository, times(1)).findByEmail("joao.silva@email.com");
+        verify(passwordEncoder, times(1)).matches("senhaErrada", usuario.getSenha());
+        verify(jwtTokenProvider, never()).generateToken(anyString());
+    }
+
+    @Test
+    void testCreateEncryptsPassword() {
+        when(usuarioRepository.existsByEmail(usuario.getEmail())).thenReturn(false);
+        when(passwordEncoder.encode("senha123")).thenReturn("$2a$10$senhaCriptografada");
+        
+        Usuario usuarioComSenhaCriptografada = new Usuario();
+        usuarioComSenhaCriptografada.setId(1L);
+        usuarioComSenhaCriptografada.setNome("João");
+        usuarioComSenhaCriptografada.setSenha("$2a$10$senhaCriptografada");
+        
+        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuarioComSenhaCriptografada);
+
+        Usuario resultado = usuarioService.create(usuario);
+
+        assertNotNull(resultado);
+        // Verifica que a senha foi realmente criptografada (diferente da original)
+        assertNotEquals("senha123", resultado.getSenha());
+        assertEquals("$2a$10$senhaCriptografada", resultado.getSenha());
+        verify(passwordEncoder, times(1)).encode("senha123");
+        verify(usuarioRepository, times(1)).save(any(Usuario.class));
     }
 }
