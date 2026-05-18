@@ -2,6 +2,9 @@
 
 import com.lucas.stackitem.model.Tag;
 import com.lucas.stackitem.service.TagService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,47 +14,48 @@ import java.util.List;
 
 @RestController
 @RequestMapping(&quot;/tags&quot;)
-<span class="fc" id="L14">public class TagController {</span>
+@io.swagger.v3.oas.annotations.tags.Tag(name = &quot;Tags&quot;, description = &quot;Operações relacionadas a tags&quot;)
+<span class="fc" id="L18">public class TagController {</span>
 
     @Autowired
     private TagService tagService;
 
     @PostMapping
     public ResponseEntity&lt;Tag&gt; create(@RequestBody Tag tag) {
-<span class="fc" id="L21">        Tag createdTag = tagService.create(tag);</span>
-<span class="fc" id="L22">        return ResponseEntity.status(HttpStatus.CREATED).body(createdTag);</span>
+<span class="fc" id="L25">        Tag createdTag = tagService.create(tag);</span>
+<span class="fc" id="L26">        return ResponseEntity.status(HttpStatus.CREATED).body(createdTag);</span>
     }
 
     @GetMapping(&quot;/{id}&quot;)
     public ResponseEntity&lt;Tag&gt; findById(@PathVariable Long id) {
-<span class="fc" id="L27">        return tagService.findById(id)</span>
-<span class="fc" id="L28">            .map(ResponseEntity::ok)</span>
-<span class="fc" id="L29">            .orElse(ResponseEntity.notFound().build());</span>
+<span class="fc" id="L31">        return tagService.findById(id)</span>
+<span class="fc" id="L32">            .map(ResponseEntity::ok)</span>
+<span class="fc" id="L33">            .orElse(ResponseEntity.notFound().build());</span>
     }
 
     @GetMapping
     public ResponseEntity&lt;List&lt;Tag&gt;&gt; findAll() {
-<span class="fc" id="L34">        List&lt;Tag&gt; tags = tagService.findAll();</span>
-<span class="fc" id="L35">        return ResponseEntity.ok(tags);</span>
+<span class="fc" id="L38">        List&lt;Tag&gt; tags = tagService.findAll();</span>
+<span class="fc" id="L39">        return ResponseEntity.ok(tags);</span>
     }
 
     @PutMapping(&quot;/{id}&quot;)
     public ResponseEntity&lt;Tag&gt; update(@PathVariable Long id, @RequestBody Tag tag) {
         try {
-<span class="fc" id="L41">            Tag updatedTag = tagService.update(id, tag);</span>
-<span class="fc" id="L42">            return ResponseEntity.ok(updatedTag);</span>
-<span class="fc" id="L43">        } catch (IllegalArgumentException e) {</span>
-<span class="fc" id="L44">            return ResponseEntity.notFound().build();</span>
+<span class="fc" id="L45">            Tag updatedTag = tagService.update(id, tag);</span>
+<span class="fc" id="L46">            return ResponseEntity.ok(updatedTag);</span>
+<span class="fc" id="L47">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L48">            return ResponseEntity.notFound().build();</span>
         }
     }
 
     @DeleteMapping(&quot;/{id}&quot;)
     public ResponseEntity&lt;Void&gt; delete(@PathVariable Long id) {
         try {
-<span class="fc" id="L51">            tagService.delete(id);</span>
-<span class="fc" id="L52">            return ResponseEntity.noContent().build();</span>
-<span class="fc" id="L53">        } catch (IllegalArgumentException e) {</span>
-<span class="fc" id="L54">            return ResponseEntity.notFound().build();</span>
+<span class="fc" id="L55">            tagService.delete(id);</span>
+<span class="fc" id="L56">            return ResponseEntity.noContent().build();</span>
+<span class="fc" id="L57">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L58">            return ResponseEntity.notFound().build();</span>
         }
     }
 }

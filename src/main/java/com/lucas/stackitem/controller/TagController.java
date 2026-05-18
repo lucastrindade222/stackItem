@@ -2,6 +2,9 @@ package com.lucas.stackitem.controller;
 
 import com.lucas.stackitem.model.Tag;
 import com.lucas.stackitem.service.TagService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/tags")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "Tags", description = "Operações relacionadas a tags")
 public class TagController {
 
     @Autowired

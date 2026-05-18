@@ -2,6 +2,8 @@ package com.lucas.stackitem.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lucas.stackitem.config.TestSecurityConfig;
+import com.lucas.stackitem.dto.LoginRequest;
+import com.lucas.stackitem.dto.LoginResponse;
 import com.lucas.stackitem.model.PerfilUsuario;
 import com.lucas.stackitem.model.StatusUsuario;
 import com.lucas.stackitem.model.Usuario;
@@ -160,5 +162,45 @@ class UsuarioControllerTest {
                 .andExpect(status().isNotFound());
 
         verify(usuarioService, times(1)).delete(99L);
+    }
+
+    // Testes de Login
+
+    @Test
+    void testLogin() throws Exception {
+        LoginResponse loginResponse = new LoginResponse("tokenJWT", usuario);
+        when(usuarioService.login(any(LoginRequest.class))).thenReturn(loginResponse);
+
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setEmail("joao.silva@email.com");
+        loginRequest.setSenha("senha123");
+
+        mockMvc.perform(post("/users/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").value("tokenJWT"))
+                .andExpect(jsonPath("$.usuario.id").value(1))
+                .andExpect(jsonPath("$.usuario.nome").value("João"))
+                .andExpect(jsonPath("$.usuario.email").value("joao.silva@email.com"));
+
+        verify(usuarioService, times(1)).login(any(LoginRequest.class));
+    }
+
+    @Test
+    void testLoginInvalidCredentials() throws Exception {
+        when(usuarioService.login(any(LoginRequest.class)))
+                .thenThrow(new IllegalArgumentException("Email ou senha inválidos"));
+
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setEmail("joao.silva@email.com");
+        loginRequest.setSenha("senhaErrada");
+
+        mockMvc.perform(post("/users/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isUnauthorized());
+
+        verify(usuarioService, times(1)).login(any(LoginRequest.class));
     }
 }

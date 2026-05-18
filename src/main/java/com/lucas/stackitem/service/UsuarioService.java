@@ -1,8 +1,12 @@
 package com.lucas.stackitem.service;
 
+import com.lucas.stackitem.dto.LoginRequest;
+import com.lucas.stackitem.dto.LoginResponse;
 import com.lucas.stackitem.model.Usuario;
 import com.lucas.stackitem.repository.UsuarioRepository;
+import com.lucas.stackitem.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,10 +18,17 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
     public Usuario create(Usuario usuario) {
         if (usuarioRepository.existsByEmail(usuario.getEmail())) {
             throw new IllegalArgumentException("Email já cadastrado");
         }
+        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         return usuarioRepository.save(usuario);
     }
 
@@ -43,6 +54,12 @@ public class UsuarioService {
         }
         
         usuario.setId(id);
+        // Criptografa a senha se foi fornecida
+        if (usuario.getSenha() != null && !usuario.getSenha().isBlank()) {
+            usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        } else {
+            usuario.setSenha(existingUsuario.getSenha());
+        }
         return usuarioRepository.save(usuario);
     }
 
@@ -51,5 +68,17 @@ public class UsuarioService {
             throw new IllegalArgumentException("Usuário não encontrado");
         }
         usuarioRepository.deleteById(id);
+    }
+
+    public LoginResponse login(LoginRequest loginRequest) {
+        Usuario usuario = usuarioRepository.findByEmail(loginRequest.getEmail())
+            .orElseThrow(() -> new IllegalArgumentException("Email ou senha inválidos"));
+
+        if (!passwordEncoder.matches(loginRequest.getSenha(), usuario.getSenha())) {
+            throw new IllegalArgumentException("Email ou senha inválidos");
+        }
+
+        String token = jwtTokenProvider.generateToken(usuario.getEmail());
+        return new LoginResponse(token, usuario);
     }
 }
