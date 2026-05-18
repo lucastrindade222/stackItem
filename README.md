@@ -64,8 +64,8 @@ Com a aplicação rodando, acesse:
 
 | Recurso | URL |
 |---|---|
-| **Swagger UI** | http://localhost:8080/swagger-ui.html |
-| **OpenAPI JSON** | http://localhost:8080/v3/api-docs |
+| **Swagger UI** | http://localhost:8080/api/swagger-ui.html |
+| **OpenAPI JSON** | http://localhost:8080/api/v3/api-docs |
 
 ### Endpoints
 

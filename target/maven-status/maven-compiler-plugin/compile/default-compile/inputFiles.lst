@@ -19,6 +19,7 @@
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/repository/ProdutoRepository.java
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/security/SecurityConfig.java
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/model/Venda.java
+/home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/config/CorsConfig.java
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/repository/TagRepository.java
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/infra/OpenApiConfig.java
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/repository/VendaRepository.java

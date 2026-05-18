@@ -1,4 +1,4 @@
-# 🔍 SonarQube - Análise de Qualidade do Código
+ # 🔍 SonarQube - Análise de Qualidade do Código
 
 ## Pré-requisitos
 
