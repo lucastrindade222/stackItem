@@ -1,0 +1,8 @@
+com/lucas/stackitem/controller/TagControllerTest.class
+com/lucas/stackitem/service/TagServiceTest.class
+com/lucas/stackitem/security/JwtTokenProviderTest.class
+com/lucas/stackitem/StackitemApplicationTests.class
+com/lucas/stackitem/config/TestSecurityConfig.class
+com/lucas/stackitem/service/ProdutoServiceTest.class
+com/lucas/stackitem/controller/ProdutoControllerTest.class
+com/lucas/stackitem/model/TagTest.class

@@ -2,6 +2,8 @@
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/model/StatusUsuario.java
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/service/TagService.java
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/controller/UsuarioController.java
+/home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/model/Perfil.java
+/home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/repository/PerfilRepository.java
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/dto/LoginRequest.java
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/model/Tag.java
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/controller/TagController.java
@@ -10,9 +12,12 @@
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/service/ProdutoService.java
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/model/PerfilUsuario.java
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/controller/VendaController.java
+/home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/controller/PerfilController.java
+/home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/model/ProdutoImagem.java
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/security/JwtTokenProvider.java
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/infra/DbSeeder.java
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/repository/UsuarioRepository.java
+/home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/service/PerfilService.java
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/controller/ProdutoController.java
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/model/Produto.java
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/model/Usuario.java
@@ -23,4 +28,5 @@
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/repository/TagRepository.java
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/infra/OpenApiConfig.java
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/repository/VendaRepository.java
+/home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/repository/ProdutoImagemRepository.java
 /home/lucas/git/stackItem/src/main/java/com/lucas/stackitem/dto/LoginResponse.java

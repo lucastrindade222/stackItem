@@ -44,13 +44,8 @@ public class Produto {
     )
     private List<Tag> tags = new ArrayList<>();
 
-    @ElementCollection
-    @CollectionTable(
-        name = "produto_imagens",
-        joinColumns = @JoinColumn(name = "produto_id")
-    )
-    @Column(name = "imagem_url")
-    private List<String> imagens = new ArrayList<>();
+    @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProdutoImagem> imagens = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {

@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -73,6 +75,17 @@ public class UsuarioController {
         @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),
         @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
+
+    @PostMapping("/{id}/upload-image")
+    public ResponseEntity<String> uploadImage(@PathVariable Long id, @RequestParam("foto") MultipartFile arquivo) {
+        try {
+            usuarioService.uploadImage(id, arquivo);
+            return ResponseEntity.ok("Imagem gravada diretamente no banco de dados!");
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Erro ao processar bytes da imagem.");
+        }
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<Usuario> update(@PathVariable Long id, @RequestBody Usuario usuario) {
         try {

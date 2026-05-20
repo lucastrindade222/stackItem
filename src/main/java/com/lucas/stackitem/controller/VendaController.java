@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.Sort;
 import java.util.List;
 
 @RestController
@@ -37,9 +40,24 @@ public class VendaController {
         return ResponseEntity.ok(vendas);
     }
 
+    @GetMapping("/paged")
+    public ResponseEntity<Page<Venda>> findAllPaged(@PageableDefault(page = 0, size = 10, sort = "id",
+     direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<Venda> vendas = vendaService.findAllPaged(pageable);
+        return ResponseEntity.ok(vendas);
+    }
+
     @GetMapping("/user/{usuarioId}")
     public ResponseEntity<List<Venda>> findByUsuarioId(@PathVariable Long usuarioId) {
         List<Venda> vendas = vendaService.findByUsuarioId(usuarioId);
+        return ResponseEntity.ok(vendas);
+    }
+
+    @GetMapping("/user/paged/{usuarioId}")
+    public ResponseEntity<Page<Venda>> findByUsuarioId(@PathVariable Long usuarioId,
+        @PageableDefault(page = 0, size = 10, sort = "id",
+     direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<Venda> vendas = vendaService.findByUsuarioId(usuarioId, pageable);
         return ResponseEntity.ok(vendas);
     }
 

@@ -4,7 +4,8 @@ import com.lucas.stackitem.model.Venda;
 import com.lucas.stackitem.repository.VendaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +25,14 @@ public class VendaService {
 
     public List<Venda> findAll() {
         return vendaRepository.findAll();
+    }
+
+    public Page<Venda> findAllPaged(Pageable pageable) {
+        return vendaRepository.findAll(pageable);
+    }
+
+    public Page<Venda> findByUsuarioId(Long usuarioId,Pageable pageable) {
+        return vendaRepository.findByUsuarioId(usuarioId, pageable);
     }
 
     public List<Venda> findByUsuarioId(Long usuarioId) {

@@ -23,7 +23,7 @@ class VendaTest {
         usuario.setSobrenome("Silva");
         usuario.setEmail("joao.silva@email.com");
         usuario.setSenha("senha123");
-        usuario.setPerfil(PerfilUsuario.ADMINISTRADOR);
+        usuario.setPerfil(new Perfil(1L, "ADMINISTRADOR"));
         usuario.setStatus(StatusUsuario.ATIVO);
 
         venda = new Venda();

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VendaService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">stackItem</a> &gt; <a href="index.source.html" class="el_package">com.lucas.stackitem.service</a> &gt; <span class="el_source">VendaService.java</span></div><h1>VendaService.java</h1><pre class="source lang-java linenums">package com.lucas.stackitem.service;
+
+import com.lucas.stackitem.model.Venda;
+import com.lucas.stackitem.repository.VendaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+<span class="fc" id="L13">public class VendaService {</span>
+
+    @Autowired
+    private VendaRepository vendaRepository;
+
+    public Venda create(Venda venda) {
+<span class="fc" id="L19">        return vendaRepository.save(venda);</span>
+    }
+
+    public Optional&lt;Venda&gt; findById(Long id) {
+<span class="fc" id="L23">        return vendaRepository.findById(id);</span>
+    }
+
+    public List&lt;Venda&gt; findAll() {
+<span class="fc" id="L27">        return vendaRepository.findAll();</span>
+    }
+
+    public Page&lt;Venda&gt; findAllPaged(Pageable pageable) {
+<span class="nc" id="L31">        return vendaRepository.findAll(pageable);</span>
+    }
+
+    public Page&lt;Venda&gt; findByUsuarioId(Long usuarioId,Pageable pageable) {
+<span class="nc" id="L35">        return vendaRepository.findByUsuarioId(usuarioId, pageable);</span>
+    }
+
+    public List&lt;Venda&gt; findByUsuarioId(Long usuarioId) {
+<span class="fc" id="L39">        return vendaRepository.findByUsuarioId(usuarioId);</span>
+    }
+
+    public Venda update(Long id, Venda venda) {
+<span class="fc" id="L43">        Venda existingVenda = vendaRepository.findById(id)</span>
+<span class="fc" id="L44">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Venda não encontrada&quot;));</span>
+        
+<span class="fc" id="L46">        venda.setId(id);</span>
+<span class="fc" id="L47">        return vendaRepository.save(venda);</span>
+    }
+
+    public void delete(Long id) {
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        if (!vendaRepository.existsById(id)) {</span>
+<span class="fc" id="L52">            throw new IllegalArgumentException(&quot;Venda não encontrada&quot;);</span>
+        }
+<span class="fc" id="L54">        vendaRepository.deleteById(id);</span>
+<span class="fc" id="L55">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

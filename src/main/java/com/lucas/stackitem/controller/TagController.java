@@ -2,14 +2,14 @@ package com.lucas.stackitem.controller;
 
 import com.lucas.stackitem.model.Tag;
 import com.lucas.stackitem.service.TagService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import java.util.List;
 
 @RestController
@@ -36,6 +36,13 @@ public class TagController {
     @GetMapping
     public ResponseEntity<List<Tag>> findAll() {
         List<Tag> tags = tagService.findAll();
+        return ResponseEntity.ok(tags);
+    }
+
+    @GetMapping("/paged")
+    public ResponseEntity<Page<Tag>> findAllPaged(@PageableDefault(page = 0, size = 10, sort = "id",
+     direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<Tag> tags = tagService.findAllPaged(pageable);
         return ResponseEntity.ok(tags);
     }
 

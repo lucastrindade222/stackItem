@@ -26,8 +26,9 @@ public class Usuario {
     @Column(nullable = false)
     private String sobrenome;
 
-    @Column(name = "imagem_perfil")
-    private String imagemPerfil;
+    @Lob
+    @Column(name = "imagem_perfil", columnDefinition = "LONGBLOB") // LONGBLOB suporta arquivos de até 4GB
+    private byte[] imagemPerfil;
 
     @Column(name = "data_criacao", nullable = false)
     private LocalDateTime dataCriacao;
@@ -45,9 +46,9 @@ public class Usuario {
     @Column(nullable = false)
     private String senha;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private PerfilUsuario perfil;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "perfil_id", nullable = false)
+    private Perfil perfil;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Venda> vendas = new ArrayList<>();

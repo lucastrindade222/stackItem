@@ -8,7 +8,9 @@ import com.lucas.stackitem.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,6 +63,14 @@ public class UsuarioService {
             usuario.setSenha(existingUsuario.getSenha());
         }
         return usuarioRepository.save(usuario);
+    }
+
+
+    public void uploadImage(Long id, MultipartFile arquivo) throws IOException {
+        Usuario usuario = usuarioRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+        usuario.setImagemPerfil(arquivo.getBytes());
+        usuarioRepository.save(usuario);
     }
 
     public void delete(Long id) {

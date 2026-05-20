@@ -1,6 +1,6 @@
 package com.lucas.stackitem.service;
 
-import com.lucas.stackitem.model.PerfilUsuario;
+import com.lucas.stackitem.model.Perfil;
 import com.lucas.stackitem.model.StatusUsuario;
 import com.lucas.stackitem.model.Usuario;
 import com.lucas.stackitem.model.Venda;
@@ -10,6 +10,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -17,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 class VendaServiceTest {
@@ -41,7 +46,7 @@ class VendaServiceTest {
         usuario.setSobrenome("Silva");
         usuario.setEmail("joao.silva@email.com");
         usuario.setSenha("senha123");
-        usuario.setPerfil(PerfilUsuario.ADMINISTRADOR);
+        usuario.setPerfil(new Perfil(1L, "ADMINISTRADOR"));
         usuario.setStatus(StatusUsuario.ATIVO);
 
         venda = new Venda();

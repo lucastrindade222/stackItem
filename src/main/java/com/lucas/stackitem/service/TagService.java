@@ -1,10 +1,13 @@
 package com.lucas.stackitem.service;
 
+import com.lucas.stackitem.model.Produto;
 import com.lucas.stackitem.model.Tag;
 import com.lucas.stackitem.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +34,10 @@ public class TagService {
 
     public List<Tag> findAll() {
         return tagRepository.findAll();
+    }
+
+    public Page<Tag> findAllPaged(Pageable pageable) {
+        return tagRepository.findAll(pageable);
     }
 
     public Tag update(Long id, Tag tag) {

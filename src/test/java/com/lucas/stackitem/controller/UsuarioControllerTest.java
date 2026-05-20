@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lucas.stackitem.config.TestSecurityConfig;
 import com.lucas.stackitem.dto.LoginRequest;
 import com.lucas.stackitem.dto.LoginResponse;
-import com.lucas.stackitem.model.PerfilUsuario;
+import com.lucas.stackitem.model.Perfil;
 import com.lucas.stackitem.model.StatusUsuario;
 import com.lucas.stackitem.model.Usuario;
 import com.lucas.stackitem.service.UsuarioService;
@@ -20,10 +20,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 import java.util.Optional;
 
+import java.io.IOException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import org.springframework.mock.web.MockMultipartFile;
 
 @WebMvcTest(UsuarioController.class)
 @Import(TestSecurityConfig.class)
@@ -48,7 +50,7 @@ class UsuarioControllerTest {
         usuario.setSobrenome("Silva");
         usuario.setEmail("joao.silva@email.com");
         usuario.setSenha("senha123");
-        usuario.setPerfil(PerfilUsuario.ADMINISTRADOR);
+        usuario.setPerfil(new Perfil(1L, "ADMINISTRADOR"));
         usuario.setStatus(StatusUsuario.ATIVO);
     }
 
@@ -185,6 +187,35 @@ class UsuarioControllerTest {
                 .andExpect(jsonPath("$.usuario.email").value("joao.silva@email.com"));
 
         verify(usuarioService, times(1)).login(any(LoginRequest.class));
+    }
+
+    @Test
+    void testUploadImage() throws Exception {
+        MockMultipartFile arquivo = new MockMultipartFile("foto", "foto.jpg", "image/jpeg", new byte[]{0x01, 0x02});
+
+        doNothing().when(usuarioService).uploadImage(eq(1L), any());
+
+        mockMvc.perform(multipart("/users/1/upload-image")
+                .file(arquivo))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Imagem gravada diretamente no banco de dados!"));
+
+        verify(usuarioService, times(1)).uploadImage(eq(1L), any());
+    }
+
+    @Test
+    void testUploadImageError() throws Exception {
+        MockMultipartFile arquivo = new MockMultipartFile("foto", "foto.jpg", "image/jpeg", new byte[]{0x01, 0x02});
+
+        doThrow(new IOException("Erro").initCause(new java.io.IOException("Erro")))
+            .when(usuarioService).uploadImage(eq(1L), any());
+
+        mockMvc.perform(multipart("/users/1/upload-image")
+                .file(arquivo))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Erro ao processar bytes da imagem."));
+
+        verify(usuarioService, times(1)).uploadImage(eq(1L), any());
     }
 
     @Test

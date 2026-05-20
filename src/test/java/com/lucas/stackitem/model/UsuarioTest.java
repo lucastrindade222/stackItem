@@ -12,16 +12,23 @@ import static org.junit.jupiter.api.Assertions.*;
 class UsuarioTest {
 
     private Usuario usuario;
+    private Perfil perfilAdministrador;
+    private Perfil perfilVendedor;
+    private Perfil perfilCliente;
 
     @BeforeEach
     void setUp() {
+        perfilAdministrador = new Perfil(1L, "ADMINISTRADOR");
+        perfilVendedor = new Perfil(2L, "VENDEDOR");
+        perfilCliente = new Perfil(3L, "CLIENTE");
+
         usuario = new Usuario();
         usuario.setId(1L);
         usuario.setNome("João");
         usuario.setSobrenome("Silva");
         usuario.setEmail("joao.silva@email.com");
         usuario.setSenha("senha123");
-        usuario.setPerfil(PerfilUsuario.ADMINISTRADOR);
+        usuario.setPerfil(perfilAdministrador);
         usuario.setStatus(StatusUsuario.ATIVO);
         usuario.setDataCriacao(LocalDateTime.now());
         usuario.setVendas(new ArrayList<>());
@@ -34,7 +41,7 @@ class UsuarioTest {
         assertEquals("Silva", usuario.getSobrenome());
         assertEquals("joao.silva@email.com", usuario.getEmail());
         assertEquals("senha123", usuario.getSenha());
-        assertEquals(PerfilUsuario.ADMINISTRADOR, usuario.getPerfil());
+        assertEquals(perfilAdministrador, usuario.getPerfil());
         assertEquals(StatusUsuario.ATIVO, usuario.getStatus());
         assertNotNull(usuario.getDataCriacao());
         assertNotNull(usuario.getVendas());
@@ -52,30 +59,31 @@ class UsuarioTest {
     void testAllArgsConstructor() {
         LocalDateTime agora = LocalDateTime.now();
         List<Venda> vendas = new ArrayList<>();
-        
+        byte[] imagemPerfil = new byte[]{0x01, 0x02, 0x03};
+
         Usuario usuarioCompleto = new Usuario(
             2L,
             "Maria",
             "Santos",
-            "perfil.jpg",
+            imagemPerfil,
             agora,
             null,
             StatusUsuario.INATIVO,
             "maria.santos@email.com",
             "senha456",
-            PerfilUsuario.VENDEDOR,
+            perfilVendedor,
             vendas
         );
 
         assertEquals(2L, usuarioCompleto.getId());
         assertEquals("Maria", usuarioCompleto.getNome());
         assertEquals("Santos", usuarioCompleto.getSobrenome());
-        assertEquals("perfil.jpg", usuarioCompleto.getImagemPerfil());
+        assertArrayEquals(imagemPerfil, usuarioCompleto.getImagemPerfil());
         assertEquals(agora, usuarioCompleto.getDataCriacao());
         assertEquals(StatusUsuario.INATIVO, usuarioCompleto.getStatus());
         assertEquals("maria.santos@email.com", usuarioCompleto.getEmail());
         assertEquals("senha456", usuarioCompleto.getSenha());
-        assertEquals(PerfilUsuario.VENDEDOR, usuarioCompleto.getPerfil());
+        assertEquals(perfilVendedor, usuarioCompleto.getPerfil());
         assertEquals(vendas, usuarioCompleto.getVendas());
     }
 
@@ -86,12 +94,12 @@ class UsuarioTest {
         novoUsuario.setNome("Novo Usuário");
         novoUsuario.setEmail("novo@email.com");
         novoUsuario.setSenha("senha");
-        novoUsuario.setPerfil(PerfilUsuario.CLIENTE);
-        
+        novoUsuario.setPerfil(perfilCliente);
+
         // Simula o callback @PrePersist
         invokeOnCreate(novoUsuario);
-        
-        assertTrue(novoUsuario.getDataCriacao().isAfter(antes) || 
+
+        assertTrue(novoUsuario.getDataCriacao().isAfter(antes) ||
                    novoUsuario.getDataCriacao().isEqual(antes));
         assertEquals(StatusUsuario.ATIVO, novoUsuario.getStatus());
     }
@@ -102,13 +110,13 @@ class UsuarioTest {
         usuarioUpdate.setNome("Usuário Update");
         usuarioUpdate.setEmail("update@email.com");
         usuarioUpdate.setSenha("senha");
-        usuarioUpdate.setPerfil(PerfilUsuario.CLIENTE);
+        usuarioUpdate.setPerfil(perfilCliente);
         LocalDateTime antes = LocalDateTime.now();
-        
+
         // Simula o callback @PreUpdate
         invokeOnUpdate(usuarioUpdate);
-        
-        assertTrue(usuarioUpdate.getDataAtualizacao().isAfter(antes) || 
+
+        assertTrue(usuarioUpdate.getDataAtualizacao().isAfter(antes) ||
                    usuarioUpdate.getDataAtualizacao().isEqual(antes));
     }
 
@@ -157,10 +165,13 @@ class UsuarioTest {
     }
 
     @Test
-    void testPerfilUsuarioEnum() {
-        assertEquals(PerfilUsuario.ADMINISTRADOR, PerfilUsuario.valueOf("ADMINISTRADOR"));
-        assertEquals(PerfilUsuario.VENDEDOR, PerfilUsuario.valueOf("VENDEDOR"));
-        assertEquals(PerfilUsuario.CLIENTE, PerfilUsuario.valueOf("CLIENTE"));
+    void testPerfilUsuario() {
+        assertNotNull(perfilAdministrador);
+        assertEquals("ADMINISTRADOR", perfilAdministrador.getNome());
+        assertNotNull(perfilVendedor);
+        assertEquals("VENDEDOR", perfilVendedor.getNome());
+        assertNotNull(perfilCliente);
+        assertEquals("CLIENTE", perfilCliente.getNome());
     }
 
     @Test

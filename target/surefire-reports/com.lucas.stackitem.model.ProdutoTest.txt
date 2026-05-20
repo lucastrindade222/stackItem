@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.lucas.stackitem.model.ProdutoTest
+-------------------------------------------------------------------------------
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.058 s -- in com.lucas.stackitem.model.ProdutoTest

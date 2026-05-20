@@ -2,7 +2,7 @@ package com.lucas.stackitem.service;
 
 import com.lucas.stackitem.dto.LoginRequest;
 import com.lucas.stackitem.dto.LoginResponse;
-import com.lucas.stackitem.model.PerfilUsuario;
+import com.lucas.stackitem.model.Perfil;
 import com.lucas.stackitem.model.StatusUsuario;
 import com.lucas.stackitem.model.Usuario;
 import com.lucas.stackitem.repository.UsuarioRepository;
@@ -19,9 +19,12 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import java.io.IOException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 class UsuarioServiceTest {
 
@@ -49,7 +52,7 @@ class UsuarioServiceTest {
         usuario.setSobrenome("Silva");
         usuario.setEmail("joao.silva@email.com");
         usuario.setSenha("senha123");
-        usuario.setPerfil(PerfilUsuario.ADMINISTRADOR);
+        usuario.setPerfil(new Perfil(1L, "ADMINISTRADOR"));
         usuario.setStatus(StatusUsuario.ATIVO);
     }
 
@@ -310,6 +313,35 @@ class UsuarioServiceTest {
         verify(usuarioRepository, times(1)).findByEmail("joao.silva@email.com");
         verify(passwordEncoder, times(1)).matches("senhaErrada", usuario.getSenha());
         verify(jwtTokenProvider, never()).generateToken(anyString());
+    }
+
+    @Test
+    void testUploadImage() throws IOException {
+        MultipartFile arquivo = new MockMultipartFile("foto", "foto.jpg", "image/jpeg", new byte[]{0x01, 0x02, 0x03});
+
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
+
+        usuarioService.uploadImage(1L, arquivo);
+
+        assertArrayEquals(new byte[]{0x01, 0x02, 0x03}, usuario.getImagemPerfil());
+        verify(usuarioRepository, times(1)).findById(1L);
+        verify(usuarioRepository, times(1)).save(usuario);
+    }
+
+    @Test
+    void testUploadImageUsuarioNotFound() {
+        MultipartFile arquivo = new MockMultipartFile("foto", "foto.jpg", "image/jpeg", new byte[0]);
+        when(usuarioRepository.findById(99L)).thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> usuarioService.uploadImage(99L, arquivo)
+        );
+
+        assertEquals("Usuário não encontrado", exception.getMessage());
+        verify(usuarioRepository, times(1)).findById(99L);
+        verify(usuarioRepository, never()).save(any(Usuario.class));
     }
 
     @Test

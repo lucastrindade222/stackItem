@@ -2,15 +2,15 @@ package com.lucas.stackitem.controller;
 
 import com.lucas.stackitem.model.Produto;
 import com.lucas.stackitem.service.ProdutoService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.Sort;
 import java.util.List;
 
 @RestController
@@ -37,6 +37,13 @@ public class ProdutoController {
     @GetMapping
     public ResponseEntity<List<Produto>> findAll() {
         List<Produto> produtos = produtoService.findAll();
+        return ResponseEntity.ok(produtos);
+    }
+
+   @GetMapping("/paged")
+    public ResponseEntity<Page<Produto>> findAllPaged(@PageableDefault(page = 0, size = 10, sort = "id",
+     direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<Produto> produtos = produtoService.findAllPaged(pageable);
         return ResponseEntity.ok(produtos);
     }
 

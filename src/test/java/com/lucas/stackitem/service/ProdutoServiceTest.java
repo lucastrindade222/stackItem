@@ -1,7 +1,11 @@
 package com.lucas.stackitem.service;
 
 import com.lucas.stackitem.model.Produto;
+import com.lucas.stackitem.model.ProdutoImagem;
+import com.lucas.stackitem.repository.ProdutoImagemRepository;
 import com.lucas.stackitem.repository.ProdutoRepository;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -17,10 +21,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 class ProdutoServiceTest {
 
     @Mock
     private ProdutoRepository produtoRepository;
+
+    @Mock
+    private ProdutoImagemRepository produtoImagemRepository;
 
     @InjectMocks
     private ProdutoService produtoService;
@@ -80,6 +90,105 @@ class ProdutoServiceTest {
         assertNotNull(resultado);
         assertEquals(2, resultado.size());
         verify(produtoRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testUploadImagens() throws IOException {
+        Long produtoId = 1L;
+        MultipartFile arquivo1 = new MockMultipartFile("foto1", "foto1.jpg", "image/jpeg", new byte[]{0x01, 0x02});
+        MultipartFile arquivo2 = new MockMultipartFile("foto2", "foto2.png", "image/png", new byte[]{0x03, 0x04});
+        List<MultipartFile> arquivos = Arrays.asList(arquivo1, arquivo2);
+
+        produto.setImagens(new ArrayList<>());
+        when(produtoRepository.findById(produtoId)).thenReturn(Optional.of(produto));
+        when(produtoRepository.save(any(Produto.class))).thenReturn(produto);
+
+        produtoService.fazerUploadImagens(produtoId, arquivos);
+
+        assertEquals(2, produto.getImagens().size());
+        assertEquals("foto1.jpg", produto.getImagens().get(0).getNomeArquivo());
+        assertEquals("foto2.png", produto.getImagens().get(1).getNomeArquivo());
+        verify(produtoRepository, times(1)).findById(produtoId);
+        verify(produtoRepository, times(1)).save(produto);
+    }
+
+    @Test
+    void testUploadImagensProdutoNotFound() {
+        Long produtoId = 99L;
+        when(produtoRepository.findById(produtoId)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(
+            RuntimeException.class,
+            () -> produtoService.fazerUploadImagens(produtoId, Arrays.asList())
+        );
+
+        assertTrue(exception.getMessage().contains("Produto não encontrado"));
+        verify(produtoRepository, times(1)).findById(produtoId);
+        verify(produtoRepository, never()).save(any(Produto.class));
+    }
+
+    @Test
+    void testDeletarImagem() {
+        Long produtoId = 1L;
+        Long imagemId = 10L;
+
+        ProdutoImagem imagem = new ProdutoImagem();
+        imagem.setId(imagemId);
+        imagem.setProduto(produto);
+
+        produto.setImagens(new ArrayList<>());
+        produto.getImagens().add(imagem);
+
+        when(produtoRepository.findById(produtoId)).thenReturn(Optional.of(produto));
+        when(produtoImagemRepository.findById(imagemId)).thenReturn(Optional.of(imagem));
+        when(produtoRepository.save(any(Produto.class))).thenReturn(produto);
+
+        produtoService.deletarImagem(produtoId, imagemId);
+
+        assertTrue(produto.getImagens().isEmpty());
+        verify(produtoRepository, times(1)).findById(produtoId);
+        verify(produtoImagemRepository, times(1)).findById(imagemId);
+        verify(produtoRepository, times(1)).save(produto);
+    }
+
+    @Test
+    void testDeletarImagemProdutoNotFound() {
+        when(produtoRepository.findById(99L)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(
+            RuntimeException.class,
+            () -> produtoService.deletarImagem(99L, 1L)
+        );
+
+        assertTrue(exception.getMessage().contains("Produto não encontrado"));
+        verify(produtoRepository, times(1)).findById(99L);
+        verify(produtoImagemRepository, never()).findById(anyLong());
+    }
+
+    @Test
+    void testDeletarImagemNaoPertenceAoProduto() {
+        Long produtoId = 1L;
+        Long imagemId = 10L;
+
+        Produto outroProduto = new Produto();
+        outroProduto.setId(2L);
+
+        ProdutoImagem imagem = new ProdutoImagem();
+        imagem.setId(imagemId);
+        imagem.setProduto(outroProduto);
+
+        when(produtoRepository.findById(produtoId)).thenReturn(Optional.of(produto));
+        when(produtoImagemRepository.findById(imagemId)).thenReturn(Optional.of(imagem));
+
+        RuntimeException exception = assertThrows(
+            RuntimeException.class,
+            () -> produtoService.deletarImagem(produtoId, imagemId)
+        );
+
+        assertTrue(exception.getMessage().contains("Esta imagem não pertence ao produto informado"));
+        verify(produtoRepository, times(1)).findById(produtoId);
+        verify(produtoImagemRepository, times(1)).findById(imagemId);
+        verify(produtoRepository, never()).save(any(Produto.class));
     }
 
     @Test

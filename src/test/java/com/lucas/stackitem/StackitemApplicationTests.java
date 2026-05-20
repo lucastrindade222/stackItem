@@ -10,6 +10,7 @@ class StackitemApplicationTests {
 
 	@Test
 	void contextLoads() {
+		System.out.println("Hello World!");
 	}
 
 }

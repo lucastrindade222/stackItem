@@ -48,7 +48,7 @@ class ProdutoTest {
     @Test
     void testAllArgsConstructor() {
         List<Tag> tags = new ArrayList<>();
-        List<String> imagens = new ArrayList<>();
+        List<ProdutoImagem> imagens = new ArrayList<>();
         LocalDateTime agora = LocalDateTime.now();
         
         Produto produtoCompleto = new Produto(
@@ -135,9 +135,15 @@ class ProdutoTest {
 
     @Test
     void testAddImagem() {
-        produto.getImagens().add("imagem1.jpg");
+        ProdutoImagem imagem = new ProdutoImagem();
+        imagem.setId(1L);
+        imagem.setNomeArquivo("imagem1.jpg");
+        imagem.setDadosImagem(new byte[]{0x01, 0x02});
+        imagem.setProduto(produto);
+        
+        produto.getImagens().add(imagem);
         assertEquals(1, produto.getImagens().size());
-        assertEquals("imagem1.jpg", produto.getImagens().get(0));
+        assertEquals("imagem1.jpg", produto.getImagens().get(0).getNomeArquivo());
     }
 
     @Test
