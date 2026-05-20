@@ -24,3 +24,7 @@ hs_err_pid*
 
 # Arquivos de ideias/brainstorming
 IDEIAS.md
+
+# Application properties específicos por ambiente
+application-dev.properties
+application-dev*.properties
