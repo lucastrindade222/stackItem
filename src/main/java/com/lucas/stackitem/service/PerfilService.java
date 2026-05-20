@@ -29,6 +29,10 @@ public class PerfilService {
         return perfilRepository.findById(id);
     }
 
+    public Optional<Perfil> findByNome(String nome) {
+        return perfilRepository.findByNome(nome);
+    }
+
     public List<Perfil> findAll() {
         return perfilRepository.findAll();
     }

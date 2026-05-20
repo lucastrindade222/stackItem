@@ -6,7 +6,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 
 import com.lucas.stackitem.model.Perfil;
-import com.lucas.stackitem.model.PerfilUsuario;
 import com.lucas.stackitem.model.StatusUsuario;
 import com.lucas.stackitem.model.Usuario;
 import com.lucas.stackitem.repository.PerfilRepository;
@@ -50,19 +49,15 @@ public class DbSeeder implements CommandLineRunner {
 
     private void addProfiles() {
         Perfil perfilAdmin = new Perfil();
-                perfilAdmin.setId(1L);
-                perfilAdmin.setNome("ADMINISTRADOR");
-                perfilService.create(perfilAdmin);
+        perfilAdmin.setNome("ADMINISTRADOR");
+        perfilService.create(perfilAdmin);
     }
 
     private void addAdminUser() {
-
-
-        Perfil perfilAdmin = perfilService.findById(1L)
+        Perfil perfilAdmin = perfilService.findByNome("ADMINISTRADOR")
                 .orElseThrow(() -> new IllegalStateException("Perfil ADMINISTRADOR não encontrado"));
 
-          Usuario usuario = new Usuario();
-        usuario.setId(1L);
+        Usuario usuario = new Usuario();
         usuario.setNome("Lucas");
         usuario.setSobrenome("dev java");
         usuario.setEmail("lucas.dev.java@email.com");
@@ -70,11 +65,6 @@ public class DbSeeder implements CommandLineRunner {
         usuario.setPerfil(perfilAdmin);
         usuario.setStatus(StatusUsuario.ATIVO);
 
-        try{
-            usuarioService.create(usuario);
-        
-        } catch (Exception e) {
-            System.err.println("Erro ao criar usuário: " + e.getMessage());
-        }
+        usuarioService.create(usuario);
     }
 }
