@@ -28,3 +28,4 @@ IDEIAS.md
 # Application properties específicos por ambiente
 application-dev.properties
 application-dev*.properties
+docs/init-database.sql
